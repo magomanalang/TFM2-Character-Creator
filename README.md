@@ -26,12 +26,8 @@ Make sure you have [Node.js](https://nodejs.org/) (which includes `npm`) install
 ### Installation
 
 1. Clone or download this repository.
-2. Open your terminal or Command Prompt.
-3. Navigate to the `champion_creator` directory:
-   ```bash
-   cd champion_creator
-   ```
-4. Install the required dependencies:
+2. Open your terminal or Command Prompt in the project root folder.
+3. Install the required dependencies:
    ```bash
    npm install
    ```
