@@ -49,6 +49,10 @@ npm run package
 
 ---
 
+You can also just open the Index.HTML and use it as well !!
+
+---
+
 ## 📖 How to Use the Creator
 
 1. **Configure Mod Metadata**: In the **Mod Info** tab, set a unique `Mod ID` (use `lowercase_snake_case` like `my_champion_mod`), name, author, and description.
