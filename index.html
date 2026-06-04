@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TFM2 Champion Creator — Mod Builder</title>
+  <meta name="description" content="Visual champion creator for Teamfight Manager 2 mods. Generate data_champion, mod_info, override_info, i18n and sprite animation files." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- SIDEBAR NAV -->
+    <nav id="sidebar">
+      <div class="logo">
+        <div class="logo-icon">&#x2694;&#xFE0F;</div>
+        <div class="logo-text">
+          <span class="logo-title">TFM2</span>
+          <span class="logo-sub">Champion Creator</span>
+        </div>
+      </div>
+
+      <div class="nav-sections">
+        <button class="nav-item active" data-tab="tutorial" id="nav-tutorial">
+          <span class="nav-icon">&#x1F4A1;</span>
+          <span>Tutorial</span>
+        </button>
+        <button class="nav-item" data-tab="info" id="nav-info" data-tooltip="nav_info">
+          <span class="nav-icon">&#x1F4CB;</span>
+          <span>Mod Info</span>
+        </button>
+        <button class="nav-item" data-tab="champion" id="nav-champion" data-tooltip="nav_champion">
+          <span class="nav-icon">&#x1F9EC;</span>
+          <span>Champion</span>
+        </button>
+        <button class="nav-item" data-tab="stats" id="nav-stats" data-tooltip="nav_stats">
+          <span class="nav-icon">&#x1F4CA;</span>
+          <span>Stats & Growth</span>
+        </button>
+        <button class="nav-item" data-tab="actions" id="nav-actions" data-tooltip="nav_actions">
+          <span class="nav-icon">&#x26A1;</span>
+          <span>Actions & Skills</span>
+        </button>
+        <button class="nav-item" data-tab="visuals" id="nav-visuals" data-tooltip="nav_visuals">
+          <span class="nav-icon">&#x1F3A8;</span>
+          <span>Visual Bindings</span>
+        </button>
+        <button class="nav-item" data-tab="sprite" id="nav-sprite" data-tooltip="nav_sprite">
+          <span class="nav-icon">&#x1F5BC;&#xFE0F;</span>
+          <span>Sprite Sheet</span>
+        </button>
+        <button class="nav-item" data-tab="i18n" id="nav-i18n" data-tooltip="nav_i18n">
+          <span class="nav-icon">&#x1F310;</span>
+          <span>Descriptions</span>
+        </button>
+                <button class="nav-item" data-tab="recipes" id="nav-recipes">
+          <span class="nav-icon">&#x1F4D6;</span>
+          <span>Recipes</span>
+        </button>
+        <button class="nav-item" data-tab="sheet" id="nav-sheet">
+          <span class="nav-icon">&#x1F4CA;</span>
+          <span>Champion Sheet</span>
+        </button>
+        <button class="nav-item" data-tab="export" id="nav-export" data-tooltip="nav_export">
+          <span class="nav-icon">&#x1F4E6;</span>
+          <span>Export Files</span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="lang-ui-toggle">
+          <button class="lang-ui-btn active" data-lang="en">EN</button>
+          <button class="lang-ui-btn" data-lang="pt">PT-BR</button>
+        </div>
+        <button id="btn-reset" class="btn-secondary btn-sm">&#x1F504; Reset All</button>
+        <button id="btn-save-json" class="btn-secondary btn-sm">&#x1F4BE; Save JSON</button>
+        <button id="btn-load-json" class="btn-secondary btn-sm">&#x1F4C2; Load JSON</button>
+        <button id="btn-load-mod" class="btn-secondary btn-sm">&#x1F4C1; Load Mod Folder</button>
+        <input type="file" id="file-load-input" accept=".json" style="display:none" />
+        <input type="file" id="mod-folder-input" webkitdirectory directory multiple style="display:none" />
+        <div class="creator-badge">
+          <span>&#x2694;&#xFE0F; by</span>
+          <span class="creator-name">RayTatsu</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- INDEX BUTTON -->
+    <button id="index-toggle-btn" class="btn-index-float" title="Reference Index">&#x1F4D1; Index</button>
+    <div id="index-overlay"></div>
+    <div id="index-panel">
+      <div class="index-panel-header">
+        <span class="index-panel-title">&#x1F4D1; Reference Index</span>
+        <button id="index-close-btn" class="btn-icon">&times;</button>
+      </div>
+      <input type="text" id="index-search" placeholder="Search effects, fields, stats..." class="index-search-input" />
+      <div class="index-tabs">
+        <button class="index-tab-btn active" data-sec="effects">Effects</button>
+        <button class="index-tab-btn" data-sec="stats">Stats</button>
+        <button class="index-tab-btn" data-sec="fields">Fields</button>
+        <button class="index-tab-btn" data-sec="visuals">Visuals</button>
+      </div>
+      <div class="index-sections">
+        <div class="index-section active" id="index-sec-effects"><div id="index-effects-list"></div></div>
+        <div class="index-section" id="index-sec-stats"><div id="index-stats-list"></div></div>
+        <div class="index-section" id="index-sec-fields"><div id="index-fields-list"></div></div>
+        <div class="index-section" id="index-sec-visuals"><div id="index-visuals-list"></div></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main">
+      <!-- TAB: TUTORIAL -->
+      <section class="tab-panel active" id="tab-tutorial">
+        <div class="lang-en">
+          <div class="panel-header">
+            <h1>Mod Creator Tutorial</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+            <p class="panel-desc">Learn how to build and export custom champions for Teamfight Manager 2.</p>
+          </div>
+
+          <div class="tutorial-container">
+            <div class="tutorial-card">
+              <h2>📌 1. Project Overview</h2>
+              <p>
+                This visual tool helps you create and configure custom champions for **Teamfight Manager 2**. When you export, it generates a complete zip file containing the correct file structures (like <code>.data_champion</code>, <code>champion.i18n</code>, <code>champion_view.champion_view</code>, and <code>#anim.fanim</code>) mapped under <code>mods/[your_mod_id]/</code>.
+              </p>
+              <div class="tutorial-tip">
+                <strong>Pro-Tip:</strong> The <strong>Mod ID</strong> (set in the first tab) is used as the directory name and unique asset prefix. Make sure it is in <code>lowercase_snake_case</code>!
+              </div>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>🗂️ 2. Tab Directory</h2>
+              <ul>
+                <li><strong>Mod Info:</strong> Set Mod metadata (ID, Author, Name, Version, Last Updated date) and base game dependency.</li>
+                <li><strong>Champion:</strong> Set identification name, category (e.g. <em>Melee Physical</em>), classifications tags, view coordinate offsets, and import i18n files for compatibility.</li>
+                <li><strong>Stats & Growth:</strong> Base values at Level 1 and Level growth coefficients (which add to stats each level up).</li>
+                <li><strong>Actions & Skills:</strong> Define champion combat abilities. Set durations, ranges, and action effects (Basic Attack, Skill 1, Skill 2, Ultimate).</li>
+                <li><strong>Visual Bindings:</strong> Tie in-game projectiles, effects, and buffs to specific sprites from the game files.</li>
+                <li><strong>Sprite Sheet:</strong> Upload PNG sheets, set grid size, extract animations, and build <code>.fanim</code>.</li>
+                <li><strong>Descriptions:</strong> Write localized names and descriptions for your champion and skills in English and Portuguese.</li>
+                <li><strong>Recipes:</strong> Quick pre-configured effect recipes (CC, Buffs, AP Damage) to insert instantly into actions.</li>
+              </ul>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>🌟 3. The Champion Sheet (Translation Engine)</h2>
+              <p>
+                The **Champion Sheet** tab is one of the most important components of this tool! It has two main functions:
+              </p>
+              <ol>
+                <li>
+                  <strong>Action Translation Engine:</strong> Constructing complex action structures (like nesting child effects under <code>Combine</code> or <code>Branch</code> actions) creates a large nested JSON block that is hard to read.
+                  <br>The **Champion Sheet automatically parses your nested action JSON** and translates it into simple, human-readable skill descriptions (e.g. <em>"Deals 120% AP Damage, stuns targets in range for 1.5 seconds, and grants a shield..."</em>). This acts as a mechanical validator for your abilities!
+                </li>
+                <li>
+                  <strong>Live Animation Player:</strong> Renders real-time animation canvases playing your sprite ranges (Idle loop, Attack sequence, Skill animations) directly in the mock card!
+                </li>
+              </ol>
+              <div class="tutorial-tip">
+                If animations do not update after you adjust range numbers in the <em>Sprite Sheet</em> tab, click the <strong>&#x1F504; Refresh Animations</strong> button on the Champion Sheet tab header to recalculate frames immediately.
+              </div>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>💾 4. Saving & Loading Existing Mods</h2>
+              <p>
+                To avoid losing progress, use the buttons at the bottom of the sidebar:
+              </p>
+              <ul>
+                <li><strong>Save JSON:</strong> Downloads a single <code>.json</code> file representing your entire workspace state. You can reload this at any time.</li>
+                <li><strong>Load Mod Folder:</strong> You can select an entire local mod folder (like <code>mods/dio_mod</code>) directly from your computer! The creator will automatically load and parse the data champion, spritesheets, animation ranges, descriptions, and offsets, restoring the entire workspace for editing!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="lang-pt" style="display:none">
+          <div class="panel-header">
+            <h1>Tutorial do Criador de Mods</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+            <p class="panel-desc">Aprenda a construir e exportar campeões customizados para o Teamfight Manager 2.</p>
+          </div>
+
+          <div class="tutorial-container">
+            <div class="tutorial-card">
+              <h2>📌 1. Visão Geral do Projeto</h2>
+              <p>
+                Esta ferramenta visual ajuda você a criar e configurar campeões customizados para o **Teamfight Manager 2**. Quando você exporta, ela gera um arquivo ZIP completo contendo as estruturas de pastas e arquivos corretos (como <code>.data_champion</code>, <code>champion.i18n</code>, <code>champion_view.champion_view</code> e <code>#anim.fanim</code>) mapeados sob <code>mods/[seu_id_de_mod]/</code>.
+              </p>
+              <div class="tutorial-tip">
+                <strong>Dica Pro:</strong> O <strong>Mod ID</strong> (definido na primeira aba) é usado como nome da pasta e prefixo único dos arquivos. Certifique-se de que esteja escrito em <code>lowercase_snake_case</code>!
+              </div>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>🗂️ 2. Guia de Abas</h2>
+              <ul>
+                <li><strong>Mod Info:</strong> Define metadados do mod (ID, Autor, Nome, Versão, Data da última atualização) e dependência básica do jogo.</li>
+                <li><strong>Champion:</strong> Define nome identificador, categoria (ex: <em>Melee Physical</em>), tags de classificação, coordenadas visuais e importação de arquivos i18n para compatibilidade.</li>
+                <li><strong>Stats & Growth:</strong> Atributos básicos no Nível 1 e coeficientes de crescimento por nível (adicionados aos atributos a cada level up).</li>
+                <li><strong>Actions & Skills:</strong> Define as habilidades de combate do campeão. Configure durações, alcances e efeitos de ação (Ataque Básico, Habilidade 1, Habilidade 2, Suprema).</li>
+                <li><strong>Visual Bindings:</strong> Conecta projéteis, efeitos visuais e buffs de status aos sprites correspondentes nos arquivos do jogo.</li>
+                <li><strong>Sprite Sheet:</strong> Envia a folha de sprites PNG, configura linhas/colunas, define o tempo de cada frame e mapeia as animações (Idle, Corrida, Ataque, etc.).</li>
+                <li><strong>Descriptions:</strong> Escreve nomes e descrições localizadas das habilidades do seu campeão em Inglês e Português.</li>
+                <li><strong>Recipes:</strong> Fórmulas pré-configuradas de efeitos comuns (Controle de Grupo, Buffs, Dano de PA) para inserir instantaneamente nas suas ações.</li>
+              </ul>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>🌟 3. A Ficha do Campeão (Champion Sheet - Motor de Tradução)</h2>
+              <p>
+                A aba **Champion Sheet** é um dos componentes mais importantes desta ferramenta! Ela possui duas funções principais:
+              </p>
+              <ol>
+                <li>
+                  <strong>Motor de Tradução de Ações:</strong> Construir estruturas de efeitos complexas (como efeitos filhos dentro de uma ação do tipo <code>Combine</code> ou <code>Branch</code>) gera blocos aninhados de JSON difíceis de ler.
+                  <br>O **Champion Sheet analisa automaticamente o JSON da ação** e o traduz em descrições legíveis em linguagem humana (ex: <em>"Causa 120% de Dano de PA, atordoa alvos no alcance por 1.5 segundos e concede um escudo..."</em>). Isso serve como validador das suas mecânicas!
+                </li>
+                <li>
+                  <strong>Reprodutor de Animações em Tempo Real:</strong> Renderiza telas de animação em tempo real que reproduzem seus frames (loop de Idle, sequência de Ataque, animações de Skill) diretamente no card visual do campeão!
+                </li>
+              </ol>
+              <div class="tutorial-tip">
+                Se as animações não atualizarem após você ajustar os números de frames na aba <em>Sprite Sheet</em>, clique no botão <strong>&#x1F504; Refresh Animations</strong> no topo do cabeçalho da Champion Sheet para recalcular os frames imediatamente.
+              </div>
+            </div>
+
+            <div class="tutorial-card">
+              <h2>💾 4. Salvar e Carregar Mods Existentes</h2>
+              <p>
+                Para não perder seu progresso, use os botões na parte inferior da barra lateral:
+              </p>
+              <ul>
+                <li><strong>Save JSON:</strong> Baixa um arquivo <code>.json</code> contendo todo o estado atual do seu criador. Você pode carregá-lo a qualquer momento.</li>
+                <li><strong>Load Mod Folder:</strong> Você pode selecionar uma pasta de mod local inteira (como <code>mods/dio_mod</code>) diretamente do seu computador! O criador lerá e importará automaticamente o data champion, spritesheets, animações, descrições e offsets, restaurando todo o ambiente de trabalho!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: MOD INFO -->
+      <section class="tab-panel" id="tab-info">
+        <div class="panel-header">
+          <h1>Mod Info</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Configure your mod's identity and metadata.</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Mod ID <span class="req">*</span></label>
+            <input type="text" id="mod_id" placeholder="my_mod" spellcheck="false" />
+            <small>Folder name & asset prefix. lowercase_snake_case. Stable after release.</small>
+          </div>
+          <div class="form-group">
+            <label>Mod Name <span class="req">*</span></label>
+            <input type="text" id="mod_name" placeholder="My Awesome Mod" />
+          </div>
+          <div class="form-group">
+            <label>Author <span class="req">*</span></label>
+            <input type="text" id="mod_author" placeholder="YourName" />
+          </div>
+          <div class="form-group">
+            <label>Version</label>
+            <input type="text" id="mod_version" placeholder="1.0.0" value="1.0.0" />
+          </div>
+          <div class="form-group full-width">
+            <label>Description</label>
+            <textarea id="mod_description" rows="3" placeholder="Short description shown to players."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Last Updated</label>
+            <input type="date" id="mod_last_updated" />
+          </div>
+          <div class="form-group">
+            <label>Base Game Version</label>
+            <input type="text" id="mod_base_version" placeholder=">=0.1.0" value=">=0.1.0" />
+            <small>Minimum game version required.</small>
+          </div>
+        </div>
+        <div class="preview-card" id="mod-info-preview"></div>
+      </section>
+
+      <!-- TAB: CHAMPION -->
+      <section class="tab-panel" id="tab-champion">
+        <div class="panel-header">
+          <h1>Champion Identity</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Define your champion's core identity, category, and tags.</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Champion ID <span class="req">*</span></label>
+            <input type="text" id="champ_id" placeholder="my_mod_fire_mage" spellcheck="false" />
+            <small>Auto-prefixed with mod ID. Keep stable after release.</small>
+          </div>
+          <div class="form-group">
+            <label>Champion Name</label>
+            <input type="text" id="champ_name" placeholder="Fire Mage" />
+            <small>Display name for i18n</small>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="champ_category">
+              <option value="Melee">Melee</option>
+              <option value="Range">Range</option>
+              <option value="Magician">Magician</option>
+              <option value="Util">Util</option>
+              <option value="Assassin">Assassin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Anim Prefix</label>
+            <input type="text" id="champ_anim_prefix" placeholder='Leave empty for ""' />
+            <small>Strip this prefix from animation tags. Use "" to keep tags as-is.</small>
+          </div>
+          <div class="form-group full-width">
+            <label>Tags</label>
+            <div class="tag-picker" id="tag-picker">
+              <button class="tag-btn" data-tag="AD">AD</button>
+              <button class="tag-btn" data-tag="AP">AP</button>
+              <button class="tag-btn" data-tag="Heal">Heal</button>
+              <button class="tag-btn" data-tag="Shield">Shield</button>
+              <button class="tag-btn" data-tag="Dot">Dot</button>
+              <button class="tag-btn" data-tag="CC">CC</button>
+              <button class="tag-btn" data-tag="Range">Range</button>
+              <button class="tag-btn" data-tag="Melee">Melee</button>
+              <button class="tag-btn" data-tag="Tank">Tank</button>
+              <button class="tag-btn" data-tag="Magic">Magic</button>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>&#x1F4A1; Champion ID:</strong> Will become <code id="champ-asset-path">asset/my_mod/champion/...</code>
+        </div>
+        <div class="form-section" style="margin-top:16px">
+          <div class="section-title">&#x1F465; Champion View Offsets</div>
+          <p style="font-size:11px;color:var(--text-muted);margin:0 0 10px 0">Face/center pixel offsets for in-game champion panel. Defaults work for most 40x40 sprites.</p>
+          <div class="form-grid">
+            <div class="form-group"><label>Face X</label><input type="number" id="cv_face_x" value="0" /></div>
+            <div class="form-group"><label>Face Y</label><input type="number" id="cv_face_y" value="-30" /></div>
+            <div class="form-group"><label>Center X</label><input type="number" id="cv_center_x" value="0" /></div>
+            <div class="form-group"><label>Center Y</label><input type="number" id="cv_center_y" value="-12" /></div>
+          </div>
+        </div>
+
+        <!-- IMPORT EXISTING CHAMPION_VIEW -->
+        <div class="cv-import-zone" style="margin-top:20px">
+          <div class="cv-import-header">
+            <h3 style="cursor:help">&#x1F4E5; Import existing champion_view (merge) <span class="help-icon" data-tooltip="cv_import">?</span></h3>
+            <span class="cv-status-badge empty" id="cv-import-status">No file loaded</span>
+            <button class="btn-danger btn-sm" id="cv-clear-btn" style="display:none">&#x1F5D1; Clear</button>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Cole ou arraste um arquivo <code>champion_view.champion_view</code> existente aqui. Seu campeão será adicionado a ele — mantendo a compatibilidade com outros mods.</p>
+          <div class="cv-drop-area" id="cv-drop-area">
+            <input type="file" id="cv-file-input" accept=".champion_view,.json" style="display:none" />
+            <div class="drop-area-content">
+              <span class="drop-icon">&#x1F4C1;</span>
+              <span class="drop-text">Click or Drag & Drop <code>champion_view.champion_view</code></span>
+            </div>
+          </div>
+          <div class="import-actions" style="margin-top:10px; display:flex; gap:10px;">
+            <button class="btn-secondary btn-sm" id="cv-paste-btn">&#x1F4CB; Paste raw JSON</button>
+          </div>
+          <div id="cv-import-list" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
+        </div>
+      </section>
+
+      <!-- TAB: STATS -->
+      <section class="tab-panel" id="tab-stats">
+        <div class="panel-header">
+          <h1>Stats & Growth</h1>
+          <p class="panel-desc">Base level 1 stats and per-level growth values.</p>
+        </div>
+        <div class="stats-table-wrapper">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Stat</th>
+                <th>Base (Lvl 1)</th>
+                <th>Growth (per level)</th>
+              </tr>
+            </thead>
+            <tbody id="stats-tbody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel-header" style="margin-top:2rem;">
+          <h2>Patch Toggles</h2>
+          <p class="panel-desc">Enable patches so specific fields can be adjusted by the game's balance system.</p>
+        </div>
+        <div class="form-group">
+          <label>Enabled Patch Slots (actions exposed to balance patches)</label>
+          <div class="tag-picker" id="patch-picker">
+            <button class="tag-btn active" data-patch="attack">attack</button>
+            <button class="tag-btn active" data-patch="skill">skill</button>
+            <button class="tag-btn active" data-patch="skill2">skill2</button>
+            <button class="tag-btn active" data-patch="ult">ult</button>
+          </div>
+          <small>All four are typically enabled. The patch type name is the action_name.</small>
+        </div>
+      </section>
+
+      <!-- TAB: ACTIONS -->
+      <section class="tab-panel" id="tab-actions">
+        <div class="panel-header">
+          <h1>Actions & Skills</h1>
+          <p class="panel-desc">Define the basic attack, two skills, and the ultimate. Each action fires one effect at <code>start_timing</code>.</p>
+        </div>
+
+        <div class="action-tabs">
+          <button class="action-tab-btn active" data-action="attack">&#x2694;&#xFE0F; Basic Attack</button>
+          <button class="action-tab-btn" data-action="skill">&#x2728; Skill 1</button>
+          <button class="action-tab-btn" data-action="skill2">&#x1F4AB; Skill 2</button>
+          <button class="action-tab-btn" data-action="ult">&#x1F525; Ultimate</button>
+        </div>
+
+        <div id="action-panels">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- TAB: VISUAL BINDINGS -->
+      <section class="tab-panel" id="tab-visuals">
+        <div class="panel-header">
+          <h1>Visual Bindings</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Register named visuals for effects, projectiles, and buffs.</p>
+        </div>
+
+        <div class="visuals-section">
+          <div class="visuals-header">
+            <h2>&#x1F3AF; view_effects</h2>
+            <button class="btn-add" id="add-view-effect">+ Add Effect Visual</button>
+          </div>
+          <div id="view-effects-list" class="bindings-list"></div>
+        </div>
+
+        <div class="visuals-section">
+          <div class="visuals-header">
+            <h2>&#x1F3F9; view_projectiles</h2>
+            <button class="btn-add" id="add-view-projectile">+ Add Projectile Visual</button>
+          </div>
+          <div id="view-projectiles-list" class="bindings-list"></div>
+        </div>
+
+        <div class="visuals-section">
+          <div class="visuals-header">
+            <h2>&#x1F31F; view_buffs</h2>
+            <button class="btn-add" id="add-view-buff">+ Add Buff Visual</button>
+          </div>
+          <div id="view-buffs-list" class="bindings-list"></div>
+        </div>
+      </section>
+
+      <!-- TAB: SPRITE SHEET -->
+      <section class="tab-panel" id="tab-sprite">
+        <div class="panel-header">
+          <h1>Sprite Sheet</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Upload your character sprite sheet and define frame ranges for each animation. Generates the <code>.fanim</code> file.</p>
+        </div>
+
+        <div class="sprite-upload-zone" id="sprite-drop-zone">
+          <input type="file" id="sprite-file-input" accept="image/png,image/webp" style="display:none" />
+          <div class="upload-icon">&#x1F5BC;&#xFE0F;</div>
+          <p>Drop your sprite sheet PNG here or <button class="btn-link" id="sprite-browse-btn">browse</button></p>
+          <small>PNG, WebP accepted</small>
+        </div>
+
+        <div id="sprite-preview-section" style="display:none">
+          <div class="sprite-preview-area">
+            <canvas id="sprite-canvas"></canvas>
+            <div id="sprite-overlay"></div>
+          </div>
+          <div class="sprite-info-bar">
+            <span id="sprite-dims">–</span>
+            <span id="sprite-frame-info">–</span>
+          </div>
+        </div>
+
+        <div class="form-grid" id="sprite-config">
+          <div class="form-group">
+            <label>Frame Width (px)</label>
+            <input type="number" id="frame_width" placeholder="40" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Frame Height (px)</label>
+            <input type="number" id="frame_height" placeholder="40" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Sheet Layout</label>
+            <select id="sheet_layout">
+              <option value="horizontal">Horizontal strip (frames left→right)</option>
+              <option value="vertical">Vertical strip (frames top→bottom)</option>
+              <option value="grid">Grid (left→right, then down)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Frame Duration (seconds)</label>
+            <input type="number" id="frame_duration" value="0.1" step="0.01" min="0.01" />
+            <small>Default duration per frame</small>
+          </div>
+        </div>
+
+        <div class="anim-ranges" id="anim-ranges">
+          <h2>Animation Ranges</h2>
+          <p class="panel-desc">Frames are 1-indexed. Define which frames belong to each animation tag.</p>
+          <div id="anim-range-list">
+            <!-- Rendered by JS -->
+          </div>
+          <button class="btn-add" id="add-anim-range">+ Add Custom Animation</button>
+        </div>
+
+        <div id="sprite-skill-icons" class="form-grid" style="margin-top:1.5rem">
+          <div class="form-group full-width">
+            <label>Skill Icons Mode</label>
+            <select id="skill_icons_mode">
+              <option value="separate">Separate PNGs (skill_icons[])</option>
+              <option value="sheet">Shared sprite sheet (skill_icon)</option>
+              <option value="none">No icons</option>
+            </select>
+          </div>
+          <div id="skill-icons-config"></div>
+        </div>
+      </section>
+
+      <!-- TAB: I18N / DESCRIPTIONS -->
+      <section class="tab-panel" id="tab-i18n">
+        <div class="panel-header">
+          <h1>Descriptions (i18n)</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Write the display name and skill descriptions. The generated <code>champion.i18n</code> supports all languages found in any imported file.</p>
+        </div>
+
+        <!-- IMPORT EXISTING I18N -->
+        <div class="i18n-import-zone">
+          <div class="i18n-import-header">
+            <h3>&#x1F4E5; Import existing i18n (merge)</h3>
+            <span class="i18n-status-badge empty" id="i18n-import-status">No file loaded</span>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Cole ou arraste um arquivo <code>champion.i18n</code> existente aqui. Seu campeão será adicionado a ele — mantendo a compatibilidade com outros mods.</p>
+          <div class="i18n-drop-area" id="i18n-drop-area">
+            <input type="file" id="i18n-file-input" accept=".i18n,.json" style="display:none" />
+            &#x1F310; Arraste um <strong>.i18n</strong> aqui ou <button class="btn-link" id="i18n-browse-btn">escolha um arquivo</button>
+          </div>
+          <div class="i18n-lang-count" id="i18n-lang-list"></div>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <button class="btn-secondary btn-sm" id="i18n-clear-btn" style="display:none">&#x1F5D1; Limpar import</button>
+            <button class="btn-secondary btn-sm" id="i18n-paste-btn">&#x1F4CB; Colar JSON</button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div class="lang-tabs" id="lang-tabs-container" style="margin-bottom:0;">
+            <!-- Rendered by JS -->
+          </div>
+          <button type="button" class="btn-secondary btn-sm" id="i18n-copy-all-btn" style="white-space:nowrap; padding: 6px 12px; font-size: 11px;">📋 Copiar para todos os idiomas</button>
+        </div>
+        <div id="i18n-form">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="info-box" style="margin-top:1.5rem">
+          <strong>&#x1F4DD; i18n key format:</strong><br/>
+          <code>#asset/base/text/champion?description.&lt;champion_id&gt;.skill</code><br/>
+          <span style="font-size:11px;margin-top:4px;display:block">O arquivo gerado inclui TODOS os idiomas do arquivo importado + os textos do seu campeão em cada idioma.</span>
+        </div>
+      </section>
+
+      <!-- TAB: RECIPES -->
+      <section class="tab-panel" id="tab-recipes">
+        <div class="panel-header">
+          <h1>&#x1F4D6; Recipes</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Save, reuse, and share effect patterns. Apply a recipe directly to any action slot with one click. Custom recipes are saved in your browser.</p>
+        </div>
+        <div class="recipe-toolbar">
+          <input type="text" id="recipe-search" placeholder="&#x1F50D; Search recipes..." class="recipe-search-input" />
+          <select id="recipe-category-filter" class="recipe-category-filter">
+            <option value="">All Categories</option>
+          </select>
+          <div class="recipe-toolbar-btns">
+            <button class="btn-primary btn-sm" id="btn-recipe-new">&#x2795; New Recipe</button>
+            <button class="btn-secondary btn-sm" id="btn-recipe-template">&#x1F4D6; Template</button>
+            <button class="btn-secondary btn-sm" id="btn-recipe-import">&#x1F4E5; Import JSON</button>
+            <button class="btn-secondary btn-sm" id="btn-recipe-export">&#x1F4E4; Export Book</button>
+            <input type="file" id="recipe-import-input" accept=".json" style="display:none" />
+          </div>
+        </div>
+        <!-- Custom (saved) recipes -->
+        <div class="recipe-section-title" id="custom-recipes-section">
+          <span>&#x2B50; My Recipe Book</span>
+          <span class="recipe-count" id="custom-recipe-count">0 recipes</span>
+        </div>
+        <div id="custom-recipes-list" class="recipes-list"></div>
+        <!-- Built-in reference recipes -->
+        <div class="recipe-section-title">
+          <span>&#x1F4DA; Built-in Patterns</span>
+          <span class="recipe-count">Reference</span>
+        </div>
+        <div id="recipes-list" class="recipes-list"></div>
+      </section>
+
+      <!-- TAB: CHAMPION SHEET -->
+      <section class="tab-panel" id="tab-sheet">
+        <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h1>Champion Sheet</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+            <p class="panel-desc">Live in-game preview of your champion. Range: 1000 units = 1 tile.</p>
+          </div>
+          <button class="btn-primary btn-sm" id="btn-refresh-sheet" style="white-space:nowrap; display:flex; align-items:center; gap:6px;">&#x1F504; Refresh Animations</button>
+        </div>
+        <div id="sheet-content" class="sheet-content"></div>
+      </section>
+
+
+      <!-- TAB: EXPORT -->
+      <section class="tab-panel" id="tab-export">
+        <div class="panel-header">
+          <h1>Export Files</h1><div class="panel-creator">&#x2694;&#xFE0F; created by <strong>RayTatsu</strong></div>
+          <p class="panel-desc">Preview and download all generated files. They will be placed in the correct mod folder structure.</p>
+        </div>
+
+        <div class="export-actions">
+          <button class="btn-primary" id="btn-download-all">&#x1F4E6; Download All (ZIP)</button>
+          <button class="btn-secondary" id="btn-preview-toggle">👁 Toggle Preview</button>
+        </div>
+
+        <!-- Mod Integrity Validator -->
+        <div id="validator-panel" class="validator-panel" style="margin-bottom: 24px; display: none;">
+          <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>🛡️ Mod Integrity Report</span>
+              <span id="validator-badge-count" style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: var(--accent); color: #fff;">0</span>
+            </div>
+          </div>
+          <div id="validator-issues-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
+        <div id="export-file-list">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div id="export-preview" class="export-preview-area" style="display:none">
+          <div class="export-file-tabs" id="export-tabs"></div>
+          <pre id="export-code-preview"><code></code></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- EFFECT EDITOR MODAL -->
+  <div id="effect-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-title">Edit Effect</h2>
+        <button class="modal-close" id="modal-close-btn">&#x2715;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Save Effect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPE PICKER MODAL -->
+  <div id="recipe-picker-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-header">
+        <h2>&#x1F4D6; Apply Recipe to <span id="recipe-picker-slot">action</span></h2>
+        <button class="modal-close" id="recipe-picker-close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+          <p style="font-size:13px;color:var(--text-sec);margin-bottom:12px">Select a recipe to paste its effect JSON into the current action. This will replace the current effect.</p>
+          <div class="recipe-picker-filter-row">
+            <input type="text" id="recipe-picker-search" placeholder="&#x1F50D; Filter recipes..." />
+            <select id="recipe-picker-category-filter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div id="recipe-picker-list" class="recipe-picker-list"></div>
+        <div class="recipe-paste-area">
+          <label style="font-size:12px;color:var(--text-sec)">&#x1F4CB; Or paste effect JSON directly:</label>
+          <textarea id="recipe-paste-json" rows="5" placeholder='{"type": "Attack", "damage": 50 ...}' style="width:100%;font-family:monospace;font-size:12px"></textarea>
+          <button class="btn-primary btn-sm" id="recipe-paste-apply-btn" style="margin-top:6px">&#x2714; Apply Pasted JSON</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="recipe-picker-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE RECIPE MODAL -->
+  <div id="save-recipe-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>&#x1F4BE; Save as Recipe</h2>
+        <button class="modal-close" id="save-recipe-close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Recipe Title <span class="req">*</span></label>
+          <input type="text" id="save-recipe-title" placeholder="e.g. My Homing Strike" />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <div style="display:flex;gap:8px">
+            <select id="save-recipe-category-sel" style="flex:1">
+              <option value="General">General</option>
+            </select>
+            <input type="text" id="save-recipe-category-custom" placeholder="New category name..." style="display:none;flex:1" />
+            <button class="btn-secondary btn-sm" id="btn-toggle-custom-category" type="button" style="white-space:nowrap">&#x2795; New</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Recipe Icon (Optional)</label>
+          <div class="recipe-image-inputs" style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn-secondary btn-sm" id="btn-trigger-recipe-file" type="button" style="white-space:nowrap">&#x1F4C1; Upload Image</button>
+              <input type="file" id="save-recipe-image-file" accept="image/*" style="display:none" />
+              <span id="save-recipe-file-name" style="font-size:11px;color:var(--text-muted);word-break:break-all">No file chosen</span>
+            </div>
+            <div>
+              <input type="text" id="save-recipe-image-url" placeholder="Or enter image URL (e.g. https://...)" />
+            </div>
+            <div class="recipe-preview-container" style="display:flex;align-items:center;gap:12px;margin-top:4px">
+              <img id="save-recipe-image-preview" src="" style="width:48px;height:48px;border-radius:6px;border:1px solid var(--border-light);object-fit:cover;display:none" />
+              <button class="btn-danger btn-sm" id="btn-clear-recipe-image" type="button" style="display:none">&#x2715; Clear Image</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="save-recipe-desc" rows="2" placeholder="What does this effect do?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Pairing Notes</label>
+          <input type="text" id="save-recipe-pairing" placeholder='e.g. casting_type:"Targeting", attack_type:"Skill"' />
+        </div>
+        <div class="recipe-json-preview" id="save-recipe-json-preview"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="save-recipe-cancel">Cancel</button>
+        <button class="btn-primary" id="save-recipe-confirm">&#x2714; Save to Recipe Book</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPE TEMPLATE MODAL -->
+  <div id="recipe-template-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-header">
+        <h2>&#x1F4D6; Recipe Import Template</h2>
+        <button class="modal-close" id="recipe-template-close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-sec);margin-bottom:12px">
+          Below is a template JSON showing how to import custom recipes from outside. You can copy this JSON, modify it, and import it into the recipe book.
+        </p>
+        <div style="position:relative">
+          <button class="btn-secondary btn-sm" id="btn-copy-template" style="position:absolute;top:8px;right:8px">&#x2398; Copy Template</button>
+          <pre style="background:var(--bg-card);border:1px solid var(--border-light);padding:12px;border-radius:6px;overflow-x:auto;max-height:300px;font-family:monospace;font-size:11px"><code id="recipe-template-code"></code></pre>
+        </div>
+        <div style="margin-top:16px">
+          <h3>Field Descriptions:</h3>
+          <ul style="font-size:12px;color:var(--text-sec);line-height:1.6;margin-left:16px">
+            <li><strong>title</strong>: (Required) Name of the recipe.</li>
+            <li><strong>desc</strong>: Description of what the recipe does.</li>
+            <li><strong>category</strong>: The category to group this recipe under (e.g. Basic Attack, Buffs, CC).</li>
+            <li><strong>pairing</strong>: Guidance notes on which action properties this recipe fits.</li>
+            <li><strong>image</strong>: (Optional) A web URL or a Base64 data URL string (e.g. <code>data:image/png;base64,...</code>).</li>
+            <li><strong>json</strong>: (Required) The recipe configuration. This can be a **full action object** (duration, cooltime, range, casting, and nested effect) or an **effect-only object** (type and its properties). It can be specified either as a stringified JSON string or as a direct nested JSON object in the file.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="recipe-template-cancel">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISUAL BINDING MODAL -->
+  <div id="binding-modal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="binding-modal-title">Add Visual Binding</h2>
+        <button class="modal-close" id="binding-modal-close">&#x2715;</button>
+      </div>
+      <div class="modal-body" id="binding-modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="binding-modal-cancel">Cancel</button>
+        <button class="btn-primary" id="binding-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT LOADING MODAL -->
+  <div id="export-loading-modal" class="modal-overlay" style="display:none; align-items:center; justify-content:center; z-index:9999;">
+    <div class="modal-box" style="max-width:400px; text-align:center; padding:30px; display:flex; flex-direction:column; gap:15px; align-items:center; background:var(--bg-panel); border:1px solid var(--border-light); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+      <h2 style="margin:0; color:var(--text-primary);">Exporting Mod</h2>
+      <p id="export-loading-text" style="margin:0; color:var(--text-muted); font-size:12px;">Preparing files for export...</p>
+      <div style="width:100%; height:12px; background:var(--bg-deep); border-radius:6px; overflow:hidden; border:1px solid var(--border-light); position:relative;">
+        <div id="export-loading-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #ff5e62, #ff9966, #ffd97d, #6be585, #7ea0e2, #b07ee2); transition:width 0.1s linear;"></div>
+      </div>
+      <div id="export-loading-percent" style="font-size:14px; font-weight:bold; color:var(--accent);">0%</div>
+    </div>
+  </div>
+
+  <!-- tooltip container -->
+  <div id="tooltip-box"><div class="tooltip-inner"><div class="tooltip-title" id="tt-title"></div><div class="tooltip-body" id="tt-body"></div><div class="tooltip-tag" id="tt-tag" style="display:none"></div></div><div class="tooltip-arrow"></div></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="tooltips.js"></script>
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>
+
+
+
+
+
+
