@@ -1,0 +1,6 @@
+# Electron build output
+dist/
+out/
+
+# Node dependencies
+node_modules/
